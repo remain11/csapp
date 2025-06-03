@@ -1,0 +1,102 @@
+#/* $begin ncopy-ys */
+##################################################################
+# ncopy.ys - Copy a src block of len words to dst.
+# Return the number of positive words (>0) contained in src.
+#
+# Include your name and ID here.
+#
+# Describe how and why you modified the baseline code.
+#
+##################################################################
+# Do not modify this portion
+# Function prologue.
+# %rdi = src, %rsi = dst, %rdx = len
+ncopy:
+
+##################################################################
+# You can modify this portion
+	iaddq $-7, %rdx
+	jle Stage1
+Loop2:	
+	mrmovq (%rdi), %r8	# read val from src...
+	mrmovq 8(%rdi), %r9
+	mrmovq 16(%rdi), %r10
+	mrmovq 24(%rdi), %r11
+	mrmovq 32(%rdi), %r12
+	mrmovq 40(%rdi), %r13
+	mrmovq 48(%rdi), %r14
+	mrmovq 56(%rdi), %rbx
+	rmmovq %r8, (%rsi)	# ...and store it to dst
+	rmmovq %r9, 8(%rsi)
+	rmmovq %r10, 16(%rsi)
+	rmmovq %r11, 24(%rsi)
+	rmmovq %r12, 32(%rsi)	
+	rmmovq %r13, 40(%rsi)
+	rmmovq %r14, 48(%rsi)
+	rmmovq %rbx, 56(%rsi)
+Test1:	
+	andq %r8, %r8		# val <= 0?
+	caddg $1, %rax		# count++
+Test2:
+	andq %r9, %r9
+	caddg $1, %rax
+Test3:
+	andq %r10, %r10
+	caddg $1, %rax
+Test4:
+	andq %r11, %r11
+	caddg $1, %rax
+Test5:
+	andq %r12, %r12
+	caddg $1, %rax
+Test6:
+	andq %r13, %r13
+	caddg $1, %rax
+Test7:
+	andq %r14, %r14
+	caddg $1, %rax
+Test8:
+	andq %rbx, %rbx
+	caddg $1, %rax
+Npos2:	
+	iaddq $64, %rdi		# src++
+	iaddq $64, %rsi		# dst++
+	iaddq $-8, %rdx		# len--
+	jg Loop2			# if so, goto Loop:
+
+Stage1:
+	iaddq $6, %rdx
+	jle Stage0		# if so, goto Stage2:
+Loop1:	
+	mrmovq (%rdi), %r8	# read val from src...
+	mrmovq 8(%rdi), %r9
+	rmmovq %r8, (%rsi)	# ...and store it to dst
+	rmmovq %r9, 8(%rsi)
+	andq %r8, %r8		# val <= 0?
+	caddg $1, %rax		# count++
+Npos:	
+	andq %r9, %r9			
+	caddg $1, %rax		
+Npos1:	
+	iaddq $16, %rdi		
+	iaddq $16, %rsi		
+	iaddq $-2, %rdx		
+	jg Loop1			
+
+Stage0:
+	mrmovq (%rdi), %r8
+	iaddq $1, %rdx
+	jle Done
+	andq %r8, %r8
+	rmmovq %r8, (%rsi)
+	caddg $1, %rax
+
+##################################################################
+# Do not modify the following section of code
+# Function epilogue.
+Done:
+	ret
+##################################################################
+# Keep the following label at the end of your function
+End:
+#/* $end ncopy-ys */

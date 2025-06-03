@@ -1,0 +1,9 @@
+0x000: 30f40001000000000000 | 			irmovq stack, %rsp
+0x00a: c0f70000000000000000 | 			iaddq $0, %rdi
+0x014: c6f00300000000000000 | 			caddg $3, %rax
+0x01e: 00                   | 			halt
+0x01f:                      | Test:
+0x01f: 30f00200000000000000 | 			irmovq $2, %rax 
+0x029: 00                   |             halt
+0x100:                      | .pos 0x100
+0x100:                      | stack:

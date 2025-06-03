@@ -1,0 +1,9 @@
+			irmovq stack, %rsp
+			iaddq $0, %rdi
+			caddg $3, %rax
+			halt
+Test:
+			irmovq $2, %rax 
+            halt
+.pos 0x100
+stack:
