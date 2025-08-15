@@ -91,6 +91,7 @@ typedef struct {
 int verbose = 0;        /* global flag for verbose output */
 static int errors = 0;  /* number of errs found when running student malloc */
 char msg[MAXLINE];      /* for whenever we need to compose an error message */
+int check = 0; /* mm_check*/
 
 /* Directory where default tracefiles are found */
 static char tracedir[MAXLINE] = TRACEDIR;
@@ -158,7 +159,7 @@ int main(int argc, char **argv)
     /* 
      * Read and interpret the command line arguments 
      */
-    while ((c = getopt(argc, argv, "f:t:hvVgal")) != EOF) {
+    while ((c = getopt(argc, argv, "f:t:hvVgalc")) != EOF) {
         switch (c) {
 	case 'g': /* Generate summary info for the autograder */
 	    autograder = 1;
@@ -190,6 +191,9 @@ int main(int argc, char **argv)
         case 'V': /* Be more verbose than -v */
             verbose = 2;
             break;
+		case 'c':
+			check = 1;
+			break;
         case 'h': /* Print this message */
 	    usage();
             exit(0);
@@ -593,12 +597,16 @@ static int eval_mm_valid(trace_t *trace, int tracenum, range_t **ranges)
 	malloc_error(tracenum, 0, "mm_init failed.");
 	return 0;
     }
-
+	if (check) {
+		mm_check();
+	}
     /* Interpret each operation in the trace in order */
     for (i = 0;  i < trace->num_ops;  i++) {
 	index = trace->ops[i].index;
 	size = trace->ops[i].size;
-
+	if (check) {
+		printf("%c %d %d\n", ((trace -> ops[i].type == 0) ? 'a': (trace -> ops[i].type == 1 ? 'f' : 'r')) , index, size);
+	}
         switch (trace->ops[i].type) {
 
         case ALLOC: /* mm_malloc */
@@ -677,7 +685,9 @@ static int eval_mm_valid(trace_t *trace, int tracenum, range_t **ranges)
 	default:
 	    app_error("Nonexistent request type in eval_mm_valid");
         }
-
+	if (check) {
+		mm_check();
+	}
     }
 
     /* As far as we know, this is a valid malloc package */
@@ -1014,4 +1024,5 @@ static void usage(void)
     fprintf(stderr, "\t-t <dir>   Directory to find default traces.\n");
     fprintf(stderr, "\t-v         Print per-trace performance breakdowns.\n");
     fprintf(stderr, "\t-V         Print additional debug info.\n");
+	fprintf(stderr, "\t-c         Use mm_check after every operation.\n");
 }
